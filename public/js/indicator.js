@@ -114,25 +114,34 @@ class Indicator {
         indicator.style.cursor = "pointer";
 
         indicator.addEventListener('click', () => {
-            clearInterval(this.silder_id);
+            if (!this.transition_id) {
+                clearInterval(this.silder_id);
 
-            const previous_index = this.current_index;
-            this.current_index = parseInt(indicator.id);
-            this.image_transition(previous_index);
+                const previous_index = this.current_index;
+                this.current_index = parseInt(indicator.id);
 
-            this.silder_id = this.automatic_slider();
+                this.direction = (this.current_index < previous_index) ? 1 : -1;
+                console.log(this.current_index, previous_index);
+                this.image_transition(previous_index);
+
+                this.silder_id = this.automatic_slider();
+            }
         });
 
         return indicator;
     }
 
     image_transition(previous_index) {
-        this.transition_value = parseInt(this.container.style.left);
+        this.transition_value = 0;
+        this.previous_value = parseInt(this.container.style.left);
+        
+        console.log(this.current_index, previous_index);
         this.transition_id = setInterval(() => {
             const transition_counter = Math.abs(this.current_index - previous_index);
 
             this.transition_value += this.direction * transition_counter;
-            this.container.style.left = `${this.transition_value}%`;
+            this.transform_value = this.previous_value + this.transition_value; 
+            this.container.style.left = `${this.transform_value}%`;
 
             if (this.transition_value % (transition_counter * 100) === 0) {
                 clearInterval(this.transition_id);
@@ -165,8 +174,8 @@ class Indicator {
                 this.current_index = Math.abs(this.current_index - this.direction) % this.length;
             }
             else {
-                this.direction = (this.current_index + 1 === this.length) ? 1 : -1;
                 this.current_index = Math.abs(this.current_index + 1) % this.length;
+                this.direction = (this.current_index < previous_index) ? 1 : -1;
             }
 
             this.image_transition(previous_index);
