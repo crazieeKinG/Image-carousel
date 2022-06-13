@@ -167,6 +167,6 @@ class Carousel {
 
             this.get_children_image();
 
-        }, (this.hold_time * 1000));
+        }, ((this.transition_time + this.hold_time) * 1000));
     }
 }
